@@ -2,6 +2,8 @@
 Functions the implement BAR estimator
 """
 
+from scipy.stats import iqr
+
 
 def dict_to_list(dict_of_list):
     """
@@ -31,4 +33,8 @@ def get_values_from_trace(model, trace, burn=0):
     varnames = [var.name for var in model.vars]
     trace_values = {var: trace.get_values(var, burn=burn) for var in varnames}
     return trace_values
+
+
+def std_from_iqr(data):
+    return iqr(data) / 1.35
 
