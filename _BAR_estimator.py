@@ -3,6 +3,7 @@ Functions the implement BAR estimator
 """
 
 from scipy.stats import iqr
+from scipy.stats import norm
 
 
 def dict_to_list(dict_of_list):
@@ -38,3 +39,10 @@ def get_values_from_trace(model, trace, burn=0):
 def std_from_iqr(data):
     return iqr(data) / 1.35
 
+
+def fit_normal(x, sigma_robust=False):
+    mu, sigma = norm.fit(x)
+    if sigma_robust:
+        sigma = std_from_iqr(x)
+    res = {"mu": mu, "sigma": sigma}
+    return res
