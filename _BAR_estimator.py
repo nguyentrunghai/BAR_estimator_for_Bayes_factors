@@ -1,7 +1,7 @@
 """
 Functions the implement BAR estimator
 """
-
+import numpy as np
 from scipy.stats import iqr
 from scipy.stats import norm
 
@@ -52,3 +52,10 @@ def fit_normal_trace(trace_values, sigma_robust=False):
     res = {varname: fit_normal(trace_values[varname], sigma_robust=sigma_robust) for varname in trace_values}
     return res
 
+
+def draw_normal_samples(mu_sigma_dict, nsamples, random_state=None):
+    rand = np.random.RandomState(random_state)
+    keys = mu_sigma_dict.keys()
+    samples = {k: rand.normal(loc=mu_sigma_dict[k]["mu"], scale=mu_sigma_dict[k]["sigma"], size=nsamples)
+               for k in keys}
+    return samples
