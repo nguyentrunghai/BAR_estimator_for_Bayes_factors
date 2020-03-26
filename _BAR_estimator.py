@@ -65,3 +65,23 @@ def log_normal_pdf(mu, sigma, y):
     sigma2 = sigma * sigma
     res = - 0.5 * np.log(2 * np.pi * sigma2) - (0.5 / sigma2) * (y - mu) ** 2
     return res
+
+
+def log_normal_trace(trace_val, mu_sigma_dict):
+    keys = list(trace_val.keys())
+    if len(keys) == 0:
+        return 0.
+
+    k0 = keys[0]
+    for k in keys[1:]:
+        assert len(trace_val[k0]) == len(trace_val[k]), k0 + " and " + k + " do not have same len."
+
+    nsamples = len(trace_val[k0])
+    logp = np.zeros(nsamples, dtype=float)
+    for k in keys:
+        mu = mu_sigma_dict[k]["mu"]
+        sigma = mu_sigma_dict[k]["sigma"]
+        y = trace_val[k]
+        logp += log_normal_pdf(mu, sigma, y)
+
+    return logp
