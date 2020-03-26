@@ -46,3 +46,9 @@ def fit_normal(x, sigma_robust=False):
         sigma = std_from_iqr(x)
     res = {"mu": mu, "sigma": sigma}
     return res
+
+
+def fit_normal_trace(trace_values, sigma_robust=False):
+    res = {varname: fit_normal(trace_values[varname], sigma_robust=sigma_robust) for varname in trace_values}
+    return res
+
