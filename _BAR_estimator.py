@@ -85,3 +85,49 @@ def log_normal_trace(trace_val, mu_sigma_dict):
         logp += log_normal_pdf(mu, sigma, y)
 
     return logp
+
+
+def fit_uniform(x, d=1e-20):
+    lower = x.min() - d
+    upper = x.max() + d
+    res = {"lower": lower, "upper": upper}
+    return res
+
+
+def fit_uniform_trace(trace_values):
+    res = {varname: fit_uniform(trace_values[varname]) for varname in trace_values}
+    return res
+
+
+def draw_uniform_samples(lower_upper_dict, nsamples, random_state=None):
+    rand = np.random.RandomState(random_state)
+    keys = lower_upper_dict.keys()
+    samples = {k: rand.uniform(low=lower_upper_dict[k]["lower"],
+                               high=lower_upper_dict[k]["upper"],
+                               size=nsamples)
+               for k in keys}
+    return samples
+
+
+def log_uniform_pdf(lower, upper, y):
+    logp = np.zeros_like(y)
+    logp[:] = -np.inf
+    logp[(y >= lower) & (y <= upper)] = np.log(1. / (upper - lower))
+    return logp
+
+
+def log_uniform_trace(trace_val, lower_upper_dict):
+    keys = list(trace_val.keys())
+    k0 = keys[0]
+    for k in keys[1:]:
+        assert len(trace_val[k0]) == len(trace_val[k]), k0 + " and " + k + " do not have same len."
+
+    nsamples = len(trace_val[k0])
+    logp = np.zeros(nsamples, dtype=float)
+    for k in keys:
+        lower = lower_upper_dict[k]["lower"]
+        upper = lower_upper_dict[k]["upper"]
+        y = trace_val[k]
+        logp += log_uniform_pdf(lower, upper, y)
+
+    return logp
