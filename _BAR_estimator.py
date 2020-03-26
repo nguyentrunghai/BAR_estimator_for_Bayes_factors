@@ -5,6 +5,8 @@ import numpy as np
 from scipy.stats import iqr
 from scipy.stats import norm
 
+import pymbar
+
 
 def dict_to_list(dict_of_list):
     """
@@ -164,3 +166,27 @@ def pot_ener_uniform_aug(sample, model, sample_aug, lower_upper):
     u2 = -log_uniform_trace(sample_aug, lower_upper)
     u = u1 + u2
     return u
+
+
+def bootstrap_BAR(w_F, w_R, repeats):
+    """
+    :param w_F: ndarray
+    :param w_R: ndarray
+    :param repeats: int
+    :return: std, float
+    """
+    n_F = len(w_F)
+    n_R = len(w_R)
+    delta_Fs = []
+    for _ in range(repeats):
+        w_F_rand = np.random.choice(w_F, size=n_F, replace=True)
+        w_R_rand = np.random.choice(w_R, size=n_R, replace=True)
+
+        df = pymbar.BAR(w_F_rand, w_R_rand, compute_uncertainty=False, relative_tolerance=1e-6, verbose=False)
+        delta_Fs.append(df)
+
+    delta_Fs = np.asarray(delta_Fs)
+    delta_Fs = delta_Fs[~np.isnan(delta_Fs)]
+    delta_Fs = delta_Fs[~np.isinf(delta_Fs)]
+
+    return delta_Fs.std()
