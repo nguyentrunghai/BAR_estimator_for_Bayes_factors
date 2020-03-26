@@ -131,3 +131,36 @@ def log_uniform_trace(trace_val, lower_upper_dict):
         logp += log_uniform_pdf(lower, upper, y)
 
     return logp
+
+
+def log_posterior_trace(model, trace_values):
+    model_vars = set([var.name for var in model.vars])
+    trace_vars = set(trace_values.keys())
+    if model_vars != trace_vars:
+        print("model_vars:", model_vars)
+        print("trace_vars:", trace_vars)
+        raise ValueError("model_vars and trace_vars are not the same set")
+
+    trace_values = dict_to_list(trace_values)
+    get_logp = np.vectorize(model.logp)
+    logp = get_logp(trace_values)
+    return logp
+
+
+def pot_ener(sample, model):
+    u = -log_posterior_trace(model, sample)
+    return u
+
+
+def pot_ener_normal_aug(sample, model, sample_aug, mu_sigma):
+    u1 = -log_posterior_trace(model, sample)
+    u2 = -log_normal_trace(sample_aug, mu_sigma)
+    u = u1 + u2
+    return u
+
+
+def pot_ener_uniform_aug(sample, model, sample_aug, lower_upper):
+    u1 = -log_posterior_trace(model, sample)
+    u2 = -log_uniform_trace(sample_aug, lower_upper)
+    u = u1 + u2
+    return u
