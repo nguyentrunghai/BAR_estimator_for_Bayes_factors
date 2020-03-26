@@ -59,3 +59,9 @@ def draw_normal_samples(mu_sigma_dict, nsamples, random_state=None):
     samples = {k: rand.normal(loc=mu_sigma_dict[k]["mu"], scale=mu_sigma_dict[k]["sigma"], size=nsamples)
                for k in keys}
     return samples
+
+
+def log_normal_pdf(mu, sigma, y):
+    sigma2 = sigma * sigma
+    res = - 0.5 * np.log(2 * np.pi * sigma2) - (0.5 / sigma2) * (y - mu) ** 2
+    return res
