@@ -26,15 +26,16 @@ def dict_to_list(dict_of_list):
     return ls_of_dic
 
 
-def get_values_from_trace(model, trace, burn=0):
+def get_values_from_trace(model, trace, thin=1, burn=0):
     """
     :param model: pymc3 model
     :param trace: pymc3 trace object
+    :param thin: int
     :param burn: int, number of steps to exclude
     :return: dict: varname --> ndarray
     """
     varnames = [var.name for var in model.vars]
-    trace_values = {var: trace.get_values(var, burn=burn) for var in varnames}
+    trace_values = {var: trace.get_values(var, thin=thin, burn=burn) for var in varnames}
     return trace_values
 
 
