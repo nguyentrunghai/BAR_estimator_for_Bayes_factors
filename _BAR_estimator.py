@@ -190,3 +190,8 @@ def bootstrap_BAR(w_F, w_R, repeats):
     delta_Fs = delta_Fs[~np.isinf(delta_Fs)]
 
     return delta_Fs.std()
+
+
+def bayes_factor_smc(model_ini, model_fin):
+    log_bf = np.log10(model_fin.marginal_likelihood) - np.log10(model_ini.marginal_likelihood)
+    return log_bf
